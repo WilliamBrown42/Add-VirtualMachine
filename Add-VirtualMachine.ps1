@@ -1,6 +1,4 @@
-﻿<#
-# Make admin test a function of some sort? 
-# Validate input? - look up how to do this. 
+﻿<# 
 # Error handling? 
 # export VMs to template from existing VMs
 # Pipeline?
@@ -18,7 +16,7 @@
 
 <#
 .Synopsis
-   Short description
+   A tool for automating virtual machine provisioning in Hyper-V. 
 .DESCRIPTION
    Long description
 .EXAMPLE
@@ -39,17 +37,20 @@
    The functionality that best describes this cmdlet
 #>
 
-[CmdletBinding()]param( 
-        [Switch]$CSV,
-        [string]$CSVpath,
-        [switch]$Tiers
+[CmdletBinding()]param(
+        [string]$CSVpath
 )
 
 <#
 #>
 begin{
     # Module test? #
+    <#
+    if (){
+    }
+    #>
 
+    # Make admin test a function of some sort? 
     # Admin Test #
     If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] “Administrator”)){
         Write-Warning “You do not have Administrator rights to run this script!`nPlease re-run this script as an Administrator!`nPress any key to continue..."
@@ -76,39 +77,38 @@ begin{
         [void][System.Console]::ReadKey($true)
         Break
     }
-       
-    $VMInformation = @()
-    # CSV use #
-    if ($CSV){
-        $ImportedCSV = Import-Csv "$CSVPath" -Delimiter "," 
-        foreach ($VM in $ImportedCSV){
-            $NewVM = New-Object -TypeName PSCustomObject 
-            $NewVM | Add-Member -type NoteProperty -name Name -value "$($VM.Name)"
-            $NewVM | Add-Member -type NoteProperty -name MemoryStartupBytes -value "$($VM.MemoryStartupBytes)"
-            $NewVM | Add-Member -type NoteProperty -name Generation -value "$($VM.Generation)"
-            $NewVM | Add-Member -type NoteProperty -name VHDPath -value "$($VM.NewVHDPath)"
-            $NewVM | Add-Member -type NoteProperty -name VHDSize -value "$($VM.NewVHDSizeBytes)"
-            $NewVM | Add-Member -type NoteProperty -name BootDevice -value "$($VM.BootDevice)"
-            $NewVM | Add-Member -type NoteProperty -name SwitchName -value "$($VM.SwitchName)"
-            $NewVM | Add-Member -type NoteProperty -name VMPath -value "$($VM.Path)"
-            # Set VM # 
-            $NewVM | Add-Member -type NoteProperty -name 
-            $NewVM | Add-Member -type NoteProperty -name
-            $NewVM | Add-Member -type NoteProperty -name
-            $NewVM | Add-Member -type NoteProperty -name
-            $NewVM | Add-Member -type NoteProperty -name
-            $NewVM | Add-Member -type NoteProperty -name 
-            $NewVM | Add-Member -type NoteProperty -name
-            $NewVM | Add-Member -type NoteProperty -name
-            $NewVM | Add-Member -type NoteProperty -name
-            $NewVM | Add-Member -type NoteProperty -name
-            #>
-            $VMInformation += $NewVM
-        }
-    } 
-}
+} 
+
 
 process{
+
+    $VMInformation = @()
+    $ImportedCSV = Import-Csv "$CSVPath" -Delimiter "," 
+    foreach ($VM in $ImportedCSV){
+        $NewVM = New-Object -TypeName PSCustomObject 
+        $NewVM | Add-Member -type NoteProperty -name Name -value "$($VM.Name)"
+        $NewVM | Add-Member -type NoteProperty -name MemoryStartupBytes -value "$($VM.MemoryStartupBytes)"
+        $NewVM | Add-Member -type NoteProperty -name Generation -value "$($VM.Generation)"
+        $NewVM | Add-Member -type NoteProperty -name VHDPath -value "$($VM.NewVHDPath)"
+        $NewVM | Add-Member -type NoteProperty -name VHDSize -value "$($VM.NewVHDSizeBytes)"
+        $NewVM | Add-Member -type NoteProperty -name BootDevice -value "$($VM.BootDevice)"
+        $NewVM | Add-Member -type NoteProperty -name SwitchName -value "$($VM.SwitchName)"
+        $NewVM | Add-Member -type NoteProperty -name VMPath -value "$($VM.Path)"
+        # Set VM # 
+        $NewVM | Add-Member -type NoteProperty -name 
+        $NewVM | Add-Member -type NoteProperty -name
+        $NewVM | Add-Member -type NoteProperty -name
+        $NewVM | Add-Member -type NoteProperty -name
+        $NewVM | Add-Member -type NoteProperty -name
+        $NewVM | Add-Member -type NoteProperty -name 
+        $NewVM | Add-Member -type NoteProperty -name
+        $NewVM | Add-Member -type NoteProperty -name
+        $NewVM | Add-Member -type NoteProperty -name
+        $NewVM | Add-Member -type NoteProperty -name
+        #>
+        $VMInformation += $NewVM
+    }
+
     # Find where to export the CSV
     #$VMInformation | Export-Csv -Path "C:\test\test.csv" -Delimiter ","
     foreach ($NewVM in $VMInformation){        
