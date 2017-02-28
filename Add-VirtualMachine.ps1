@@ -5,7 +5,6 @@
 # Figure out help?
 # JSON tiers - figure out rought schema
 # Powershell version test?
-# Maybe make it where there's a novhd version? 
 # Better varible names -- need this for sure.
 # Figure out if thing should be function-iffied
 # Use exact names and be consistent
@@ -77,10 +76,6 @@ begin{
         [void][System.Console]::ReadKey($true)
         Break
     }
-} 
-
-
-process{
 
     $VMInformation = @()
     $ImportedCSV = Import-Csv "$CSVPath" -Delimiter "," 
@@ -95,6 +90,7 @@ process{
         $NewVM | Add-Member -type NoteProperty -name SwitchName -value "$($VM.SwitchName)"
         $NewVM | Add-Member -type NoteProperty -name VMPath -value "$($VM.Path)"
         # Set VM # 
+        <#
         $NewVM | Add-Member -type NoteProperty -name 
         $NewVM | Add-Member -type NoteProperty -name
         $NewVM | Add-Member -type NoteProperty -name
@@ -108,23 +104,40 @@ process{
         #>
         $VMInformation += $NewVM
     }
+} 
+
+process{
 
     # Find where to export the CSV
     #$VMInformation | Export-Csv -Path "C:\test\test.csv" -Delimiter ","
     foreach ($NewVM in $VMInformation){        
-        # Take out VHD maybe and put it in set VM? #
         New-VM -Name "$($NewVM.Name)" `
                -MemoryStartupBytes "$($NewVM.MemoryStartupBytes)" `
                -Generation "$($NewVM.Generation)" `
-               -NewVHDPath "$($NewVM.VHDPath)" `
-               -NewVHDSizeBytes "$($NewVM.VHDSize)" `
-               -BootDevice "$($NewVM.BootDevice)" `
+               -NoVHD `
                -SwitchName "$($NewVM.SwitchName)" `
                -Path "$($NewVM.VMPath)" `
                -WhatIf `
+               #-NewVHDPath "$($NewVM.VHDPath)" `
+               #-NewVHDSizeBytes "$($NewVM.VHDSize)" `
                #-ErrorAction SilentlyContinue
-        <#
-         Set-VM -Name "$($NewVM.Name)" `
+        [int]$PercentComplete = ((($increment++)/$VMInformation.length)*100)
+        Write-Progress -Activity "Creating your VM's..." `
+                       -PercentComplete  $PercentComplete `
+                       -CurrentOperation "$PercentComplete% Complete" `
+                       -Status "Please Wait..."
+    }
+
+    # Confirm that each VM actually exists before setting, settings. 
+    foreach ($NewVM in $VMInformation) {
+        Get-VM $NewVM.name 
+    }
+    
+    # Figure out a better way to handle this. 
+    if ($SetVM -eq "True"){
+        foreach ($NewVM in $VMInformation){
+            <#
+            Set-VM -Name "$($NewVM.Name)" `
                     [-GuestControlledCacheTypes <bool>] `
                     [-LowMemoryMappedIoSpace <uint32>] `
                     [-HighMemoryMappedIoSpace <uint64>] `
@@ -150,13 +163,13 @@ process{
                     [-WhatIf] `
                     [-Confirm]  `
                     [<CommonParameters>] `
-        #>
-         
-        [int]$PercentComplete = ((($increment++)/$VMInformation.length)*100)
-        Write-Progress -Activity "Creating your VM's" `
-                       -PercentComplete  $PercentComplete `
-                       -CurrentOperation "$PercentComplete% Complete" `
-                       -Status "Please Wait..."
+            #>
+            [int]$PercentComplete = ((($increment++)/$VMInformation.length)*100)
+            Write-Progress -Activity "Configuring VM Settings..." `
+                           -PercentComplete  $PercentComplete `
+                           -CurrentOperation "$PercentComplete% Complete" `
+                           -Status "Please Wait..."
+        }
     }
 }
 
