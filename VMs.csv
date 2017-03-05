@@ -1,4 +1,4 @@
-Name,MemoryStartupBytes,Generation,NewVHDPath,NewVHDSizeBytes,BootDevice,SwitchName,Path
+Name,MemoryStartupBytes,Generation,VHDPath,VHDSizeBytes,BootDevice,SwitchName,VMPath
 TEST01,536870912,1,F:\VHD\TEST01.vhdx,68719476736,VHD,TestBed,F:\TEST\VM01\
 TEST02,536870912,1,F:\VHD\TEST02.vhdx,68719476736,VHD,TestBed,F:\TEST\VM02\
 TEST03,536870912,1,F:\VHD\TEST03.vhdx,68719476736,VHD,TestBed,F:\TEST\VM03\

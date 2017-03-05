@@ -1,7 +1,0 @@
-if ($tiers){
-    # Fix tiers + figure out how to add to array #
-    # Write this so that it could be used with .ini, .psd, .xml, and all kinds of others. 
-    # Rewrite not to use get content? 
-    # $Tiers = Get-Content "$script_path\Tiers.json" | Out-String | ConvertFrom-Json
-    $VMInformation += $NewVM
-} else {
