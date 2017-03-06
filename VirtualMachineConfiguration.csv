@@ -1,0 +1,16 @@
+Name,MemoryStartupBytes,Generation,BootDevice,SwitchName,VMPath,Configure,BootDrive,BootDriveType?,VHDPath - BootDrive?,Controllertype,Controller,Fixed,Storage,Startup,AutomaticStartAction,AutomaticStartDelay,AutomaticStopAction,Memory,Dynamic,MemoryMinimumBytes,MemoryMaximumBytes,Compute,ProcessorCount,,ProcessorCount,,,,,VHDPath - BootDrive?,VHDSizeBytes,BootDevice
+TEST01,536870912,1,VHD,TestBed,F:\TEST\VM01\,1,1,differencing,F:\VHD\TEST01.vhdx,IDE,0,1,1,1,Nothing,30,TurnOff,1,,,,,,,,,,,,F:\VHD\TEST01.vhdx,68719476736,VHD
+TEST02,536870912,1,VHD,TestBed,F:\TEST\VM02\,1,1,Copy,F:\VHD\TEST02.vhdx,SCSI,0,1,1,1,Start,30,Save,1,,,,,,,,,,,,F:\VHD\TEST02.vhdx,68719476736,VHD
+TEST03,536870912,1,VHD,TestBed,F:\TEST\VM03\,1,1,NewDrive,F:\VHD\TEST03.vhdx,IDE,0,1,1,1,StartIfRunning,30,Shutdown,1,,,,,,,,,,,,F:\VHD\TEST03.vhdx,68719476736,VHD
+TEST04,536870912,1,VHD,TestBed,F:\TEST\VM04\,1,1,differencing,F:\VHD\TEST04.vhdx,SCSI,0,1,1,1,Nothing,30,TurnOff,1,,,,,,,,,,,,F:\VHD\TEST04.vhdx,68719476736,VHD
+TEST05,536870912,1,VHD,TestBed,F:\TEST\VM05\,1,1,Copy,F:\VHD\TEST05.vhdx,IDE,0,1,1,1,Start,30,Save,1,,,,,,,,,,,,F:\VHD\TEST05.vhdx,68719476736,VHD
+TEST06,536870912,1,VHD,TestBed,F:\TEST\VM06\,1,1,NewDrive,F:\VHD\TEST06.vhdx,SCSI,0,1,1,1,StartIfRunning,30,Shutdown,1,,,,,,,,,,,,F:\VHD\TEST06.vhdx,68719476736,VHD
+TEST07,536870912,1,VHD,TestBed,F:\TEST\VM07\,1,1,differencing,F:\VHD\TEST07.vhdx,IDE,0,1,1,1,Nothing,30,TurnOff,1,,,,,,,,,,,,F:\VHD\TEST07.vhdx,68719476736,VHD
+TEST08,536870912,1,VHD,TestBed,F:\TEST\VM08\,1,1,Copy,F:\VHD\TEST08.vhdx,SCSI,0,1,1,1,Start,30,Save,1,,,,,,,,,,,,F:\VHD\TEST08.vhdx,68719476736,VHD
+TEST09,536870912,1,VHD,TestBed,F:\TEST\VM09\,1,1,NewDrive,F:\VHD\TEST09.vhdx,IDE,0,1,1,1,StartIfRunning,30,Shutdown,1,,,,,,,,,,,,F:\VHD\TEST09.vhdx,68719476736,VHD
+TEST10,536870912,1,VHD,TestBed,F:\TEST\VM10\,1,1,differencing,F:\VHD\TEST10.vhdx,SCSI,0,1,1,1,Nothing,30,TurnOff,1,,,,,,,,,,,,F:\VHD\TEST10.vhdx,68719476736,VHD
+TEST11,536870912,1,VHD,TestBed,F:\TEST\VM11\,1,1,Copy,F:\VHD\TEST11.vhdx,IDE,0,1,1,1,Start,30,Save,1,,,,,,,,,,,,F:\VHD\TEST11.vhdx,68719476736,VHD
+TEST12,536870912,1,VHD,TestBed,F:\TEST\VM12\,1,1,NewDrive,F:\VHD\TEST12.vhdx,SCSI,0,1,1,1,StartIfRunning,30,Shutdown,1,,,,,,,,,,,,F:\VHD\TEST12.vhdx,68719476736,VHD
+TEST13,536870912,1,VHD,TestBed,F:\TEST\VM13\,1,1,differencing,F:\VHD\TEST13.vhdx,IDE,0,1,1,1,Nothing,30,TurnOff,1,,,,,,,,,,,,F:\VHD\TEST13.vhdx,68719476736,VHD
+TEST14,536870912,1,VHD,TestBed,F:\TEST\VM14\,1,1,Copy,F:\VHD\TEST14.vhdx,SCSI,0,1,1,1,Start,30,Save,1,,,,,,,,,,,,F:\VHD\TEST14.vhdx,68719476736,VHD
+TEST15,536870912,1,VHD,TestBed,F:\TEST\VM15\,1,1,NewDrive,F:\VHD\TEST15.vhdx,IDE,0,1,1,1,StartIfRunning,30,Shutdown,1,,,,,,,,,,,,F:\VHD\TEST15.vhdx,68719476736,VHD

@@ -1,9 +1,7 @@
 ﻿<# 
 # Error handling? 
-# export VMs to template from existing VMs
 # Pipeline?
 # Figure out help?
-# JSON tiers - figure out rought schema
 # Powershell version test?
 # Better varible names -- need this for sure.
 # Figure out if thing should be function-iffied
@@ -14,44 +12,23 @@
 #>
 
 <#
-.Synopsis
-   A tool for automating virtual machine provisioning in Hyper-V. 
-.DESCRIPTION
-   Long description
-.EXAMPLE
-   Example of how to use this cmdlet
-.EXAMPLE
-   Another example of how to use this cmdlet
-.INPUTS
-   Inputs to this cmdlet (if any)
-.OUTPUTS
-   Output from this cmdlet (if any)
-.NOTES
-   General notes
-.COMPONENT
-   The component this cmdlet belongs to
-.ROLE
-   The role this cmdlet belongs to
-.FUNCTIONALITY
-   The functionality that best describes this cmdlet
 #>
 
 [CmdletBinding()]param(
-        [string]$CSVpath
+        [string]$VMConfigurationCSV
 )
 
-<#
-#>
 begin{
-    # Module test? #
+    # Module test? Hyper-V #
     <#
-    if (){
-    }
+    if (!(Get-Module -ListAvailable -Name "Hyper-V")) {
+        Write-Output "Module does not exist"
+        # try, catch, blah here. 
+    } 
     #>
 
-    # Make admin test a function of some sort? 
     # Admin Test #
-    If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] “Administrator”)){
+    If (!([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] “Administrator”)){
         Write-Warning “You do not have Administrator rights to run this script!`nPlease re-run this script as an Administrator!`nPress any key to continue..."
         $trigger = $true
     }
@@ -77,20 +54,24 @@ begin{
         Break
     }
 
+
+    # Split into multiple CSV's?
+    # VM Config
+    # Config specifics (Storage, networking?)
     $VMInformation = @()
-    $ImportedCSV = Import-Csv "$CSVPath" -Delimiter "," 
+    $ImportedCSV = Import-Csv "$VMConfigurationCSV" -Delimiter "," 
     foreach ($VM in $ImportedCSV){
         $NewVM = New-Object -TypeName PSCustomObject 
         $NewVM | Add-Member -type NoteProperty -name Name -value "$($VM.Name)"
         $NewVM | Add-Member -type NoteProperty -name MemoryStartupBytes -value "$($VM.MemoryStartupBytes)"
         $NewVM | Add-Member -type NoteProperty -name Generation -value "$($VM.Generation)"
-        $NewVM | Add-Member -type NoteProperty -name VHDPath -value "$($VM.NewVHDPath)"
-        $NewVM | Add-Member -type NoteProperty -name VHDSize -value "$($VM.NewVHDSizeBytes)"
         $NewVM | Add-Member -type NoteProperty -name BootDevice -value "$($VM.BootDevice)"
         $NewVM | Add-Member -type NoteProperty -name SwitchName -value "$($VM.SwitchName)"
         $NewVM | Add-Member -type NoteProperty -name VMPath -value "$($VM.Path)"
         # Set VM # 
         <#
+        #$NewVM | Add-Member -type NoteProperty -name VHDPath -value "$($VM.NewVHDPath)"
+        #$NewVM | Add-Member -type NoteProperty -name VHDSize -value "$($VM.NewVHDSizeBytes)"
         $NewVM | Add-Member -type NoteProperty -name 
         $NewVM | Add-Member -type NoteProperty -name
         $NewVM | Add-Member -type NoteProperty -name
@@ -102,26 +83,37 @@ begin{
         $NewVM | Add-Member -type NoteProperty -name
         $NewVM | Add-Member -type NoteProperty -name
         #>
-        $VMInformation += $NewVM
+        $VMConfiguration += $NewVM
+    }
+    # Look up how to add objects to eachother or keep this the same?
+    $VMStorageConfiguration = @()
+    $ImportedCSV = Import-Csv "$StorageConfigurationCSV" -Delimiter "," 
+    foreach ($VM in $ImportedCSV){
+        $StorageConfiguration = New-Object -TypeName PSCustomObject 
+        $StorageConfiguration | Add-Member -type NoteProperty -name Name -value "$($VM.Name)"
+        $StorageConfiguration | Add-Member -type NoteProperty -name Name -value ""
+        $StorageConfigurationCSV | Add-Member -type NoteProperty -name Name -value ""
+        $VMStorageConfiguration += $StorageConfiguration
     }
 } 
 
 process{
-
-    # Find where to export the CSV
-    #$VMInformation | Export-Csv -Path "C:\test\test.csv" -Delimiter ","
-    foreach ($NewVM in $VMInformation){        
+    
+    # Initial VM creation
+    foreach ($NewVM in $VMConfiguration){
+        # Specify it without a Switch name?
+        # Need to look at how I can pass it in non-byte form. 
+        # Boot device for network installs?
         New-VM -Name "$($NewVM.Name)" `
                -MemoryStartupBytes "$($NewVM.MemoryStartupBytes)" `
                -Generation "$($NewVM.Generation)" `
+               -BootDevice `
                -NoVHD `
                -SwitchName "$($NewVM.SwitchName)" `
                -Path "$($NewVM.VMPath)" `
                -WhatIf `
-               #-NewVHDPath "$($NewVM.VHDPath)" `
-               #-NewVHDSizeBytes "$($NewVM.VHDSize)" `
-               #-ErrorAction SilentlyContinue
-        [int]$PercentComplete = ((($increment++)/$VMInformation.length)*100)
+               #-ErrorAction SilentlyContinue 
+        [int]$PercentComplete = ((($increment++)/$VMConfiguration.length)*100)
         Write-Progress -Activity "Creating your VM's..." `
                        -PercentComplete  $PercentComplete `
                        -CurrentOperation "$PercentComplete% Complete" `
@@ -129,46 +121,115 @@ process{
     }
 
     # Confirm that each VM actually exists before setting, settings. 
-    foreach ($NewVM in $VMInformation) {
+    foreach ($NewVM in $VMConfiguration) {
         Get-VM $NewVM.name 
     }
     
-    # Figure out a better way to handle this. 
-    if ($SetVM -eq "True"){
-        foreach ($NewVM in $VMInformation){
-            <#
-            Set-VM -Name "$($NewVM.Name)" `
-                    [-GuestControlledCacheTypes <bool>] `
-                    [-LowMemoryMappedIoSpace <uint32>] `
-                    [-HighMemoryMappedIoSpace <uint64>] `
-                    [-ProcessorCount <long>] `
-                    [-StaticMemory] `
-                    [-DynamicMemory] `
-                    [-MemoryMinimumBytes <long>] `
-                    [-MemoryMaximumBytes <long>] `
-                    [-MemoryStartupBytes <long>] `
-                    [-AutomaticStartAction <StartAction> {Nothing | StartIfRunning | Start}] `
-                    [-AutomaticStopAction <StopAction> {TurnOff | Save | ShutDown}] `
-                    [-AutomaticStartDelay <int>] `
-                    [-AutomaticCriticalErrorAction <CriticalErrorAction> {None | Pause}] `
-                    [-AutomaticCriticalErrorActionTimeout <int>] `
-                    [-LockOnDisconnect <OnOffState> {On | Off}] `
-                    [-Notes <string>] `
-                    [-NewVMName <string>] `
-                    [-SnapshotFileLocation <string>] `
-                    [-SmartPagingFilePath <string>] `
-                    [-CheckpointType <CheckpointType> {Disabled | Production | ProductionOnly | Standard}] `
-                    [-Passthru] `
-                    [-AllowUnverifiedPaths] `
-                    [-WhatIf] `
-                    [-Confirm]  `
-                    [<CommonParameters>] `
-            #>
-            [int]$PercentComplete = ((($increment++)/$VMInformation.length)*100)
-            Write-Progress -Activity "Configuring VM Settings..." `
+   
+    if ($Configure -eq "1"){
+        foreach ($NewVM in $VMConfiguration){
+
+            if ($BootDrive){
+                if ($differencing){
+                    New-VHD –Path “$NewDrivePath” –ParentPath "$SysprepedDrive” –Differencing
+                    Add-VMHardDiskDrive -VMName $VMName `
+                                        -Path $NewDrivePath `
+                                        -ControllerType $controllertype `
+                                        -ControllerNumber $controllernumber 
+                    $BootDrive = Get-VMHardDiskDrive -VMName $VMName `
+                                                     -ControllerType $controllertype `
+                                                     -ControllerNumber $controllernumber
+                    Set-VMFirmware -VMName $VMName -FirstBootDevice $BootDrive
+                } elseif ($Copy){
+                    Copy-Item -Path "$SysprepedDrive" -Destination "$NewDrivePath"
+                    Add-VMHardDiskDrive -VMName $VMName `
+                                        -Path $NewDrivePath `
+                                        -ControllerType $controllertype `
+                                        -ControllerNumber $controllernumber 
+                    $BootDrive = Get-VMHardDiskDrive -VMName $VMName `
+                                                     -ControllerType $controllertype `
+                                                     -ControllerNumber $controllernumber
+                    Set-VMFirmware -VMName $VMName -FirstBootDevice $BootDrive
+                } elseif ($NewDrive){
+                    if ($Dynamic){
+                        New-VHD -Path `
+                                -SizeBytes `
+                                -Dynamic
+                    } else {
+                        New-VHD -Path `
+                                -SizeBytes `
+                                -Fixed
+                    }
+                }
+            }
+
+            if ($Storage){
+                # For additional each Disk in the collection
+                Foreach ($Disk in $ExtraDrive){
+                    if ($Dynamic){
+                        New-VHD -Path `
+                                -SizeBytes `
+                                -Dynamic
+                    } else {
+                        New-VHD -Path `
+                                -SizeBytes `
+                                -Fixed
+                    }
+                    # Attach the VHD(x) to the Vm
+                    Add-VMHardDiskDrive -VMName $VMName `
+                                        -Path 
+                }
+            }
+            
+
+            if ($startup){
+                Write-Progress -Activity "Configuring automatic start/stop actions..." `
+                               -PercentComplete  $PercentComplete `
+                               -CurrentOperation "$PercentComplete% Complete" `
+                               -Status "Please Wait..."
+                Set-VM -Name `
+                       -AutomaticStartAction `
+                       -AutomaticStartDelay `
+                       -AutomaticStopAction 
+            }
+                  
+            if ($Memory -eq 1){
+                if ($Dynamic -eq 1){
+                    Write-Progress -Activity "Configuring memory..." `
+                                   -PercentComplete  $PercentComplete `
+                                   -CurrentOperation "$PercentComplete% Complete" `
+                                   -Status "Please Wait..."
+                    Set-VM -Name  `
+                           -DynamicMemory `
+                           -MemoryMinimumBytes  `
+                           -MemoryStartupBytes  `
+                           -MemoryMaximumBytes `
+                } else {
+                    Write-Progress -Activity "Configuring memory..." `
+                                   -PercentComplete  $PercentComplete `
+                                   -CurrentOperation "$PercentComplete% Complete" `
+                                   -Status "Please Wait..."
+                    Set-VM -Name  `
+                           -StaticMemory `
+                           -MemoryStartupBytes  `
+                }
+            }
+            
+            if ($compute){
+                Set-VM -Name `
+                       -ProcessorCount 
+            } 
+
+            if ($Networking){
+            }
+            
+              
+            [int]$PercentComplete = ((($increment++)/$VMConfiguration.length)*100)
+            Write-Progress -Activity "$VMNAME is fully configured" `
                            -PercentComplete  $PercentComplete `
                            -CurrentOperation "$PercentComplete% Complete" `
                            -Status "Please Wait..."
+                           Start-Sleep 1
         }
     }
 }
